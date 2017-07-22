@@ -21,9 +21,25 @@ class Controller_API extends Controller
         */
     public function action_venues()
     {
-        $result = ORM::factory('Venue')
-        ->find_all();
-        $this->response->json($result);
+        $venues = ORM::factory('Venue')
+            ->find_all(); // I tried to load the items with `with()` method but it didn't work :(
+        
+        $results = [];
+
+        foreach ($venues as $venue) {
+            $items = $venue
+                ->items
+                ->find_all()
+                ->as_array();
+
+            $results[] = [
+                'id' => $venue->id,
+                'name' => $venue->name,
+                'items' => array_column($items, 'name')
+            ];
+        }
+
+        $this->response->json($results);
     }
 
     /**
@@ -42,8 +58,8 @@ class Controller_API extends Controller
             ->find_all();
         
         $venue = [
-            'bookingId' => $result->id,
-            'bookerName' => $result->name,
+            'id' => $result->id,
+            'name' => $result->name,
             'items' => []
         ];
 
@@ -51,8 +67,8 @@ class Controller_API extends Controller
             $venue['items'][] = [
                 'id' => $item->id,
                 'name' => $item->name,
-                $item->space,
-                $item->product
+                'space' => $item->space,
+                'product' => $item->product
             ];
         }
 
@@ -89,7 +105,7 @@ class Controller_API extends Controller
 
 // /venue or /venues
 Route::set('venues', 'venue(s)')->defaults([
-    'controller' => 'APIS',
+    'controller' => 'API',
     'action' => 'venues',
 ]);
 
