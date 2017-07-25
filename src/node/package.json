@@ -1,8 +1,19 @@
 {
 	"name": "backend-test",
 	"version": "1.0.0",
-	"main": "index.js",
 	"scripts": {
-		"start": "node ."
+		"start": "node .",
+		"test": "jest"
+	},
+	"dependencies": {
+		"jest": "^20.0.4",
+		"koa": "^2.3.0",
+		"koa-body": "^2.3.0",
+		"koa-router": "^7.2.1",
+		"openrecord": "^1.12.2",
+		"sqlite3": "^3.1.8"
+	},
+	"jest": {
+		"setupTestFrameworkScriptFile": "./test/setup.js"		
 	}
 }

@@ -22,20 +22,26 @@ class Controller_API extends Controller
     public function action_venues()
     {
         $venues = ORM::factory('Venue')
-            ->find_all(); // I tried to load the items with `with()` method but it didn't work :(
+            ->find_all();
+
+        // I tried to load the items with `with()` method but it didn't work 
+        $items = ORM::factory('Item')
+            ->find_all()
+            ->as_array();
         
         $results = [];
 
         foreach ($venues as $venue) {
-            $items = $venue
-                ->items
-                ->find_all()
-                ->as_array();
+            $venue_items = array_filter(
+                $items, 
+                function($item) use ($venue) {
+                    return $item->venue_id == $venue->id;
+                });
 
             $results[] = [
                 'id' => $venue->id,
                 'name' => $venue->name,
-                'items' => array_column($items, 'name')
+                'items' => array_column($venue_items, 'name')
             ];
         }
 
